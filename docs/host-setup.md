@@ -27,4 +27,4 @@ curl.exe -I https://dockerhub.timeweb.cloud/v2/
 
 curl.exe -I https://s3.cloud.ru
 
-'curl.exe -I https://go.dev/dl/'
+curl.exe -I https://go.dev/dl/

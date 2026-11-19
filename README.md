@@ -10,7 +10,6 @@ Pet-проект #1
 - VMware Workstation Pro version: 25.0.0.24995812
 - OS Ubuntu 26.04 (на обоих хостах)
 - WSL 2 Ubntu 24.04
-- Docker
 - Ansible
 - OpenTofu
 

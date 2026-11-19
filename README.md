@@ -7,11 +7,12 @@ Pet-проект #1
 
 Используемые инструменты:
 
-- VMware Workstation Pro version: 25.0.0.24995812
+- VMware Workstation Pro v25.0.0.24995812
 - OS Ubuntu 26.04 (на обоих хостах)
 - WSL 2 Ubntu 24.04
-- Ansible
-- OpenTofu
+- Ansible v2.21.6
+- OpenTofu v1.13.9
+- AWS CLI v2.41.1
 
 Шаги проекта:
 

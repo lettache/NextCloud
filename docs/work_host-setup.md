@@ -71,3 +71,13 @@ memory=6442450944
 # Проверка доступности используемых конечных точек на wsl: Ubuntu-24.04
 
 `curl -I https://github.com https://ghcr.io/v2/ https://download.docker.com https://dockerhub.timeweb.cloud/v2/ https://s3.cloud.ru https://go.dev/dl/`
+
+# Создание профиля aws и проверка подключения к S3 cloud.ru
+
+```
+aws configure --profile s3_cloudru
+chmod 600 ~/.aws/credentials 
+EP=https://s3.cloud.ru
+aws --profile s3_cloudru --endpoint-url $EP s3 ls
+
+```

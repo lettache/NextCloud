@@ -12,7 +12,7 @@ Pet-проект #1
 - WSL 2 Ubntu 24.04
 - Docker
 - Ansible
-- Terraform
+- OpenTofu
 
 Шаги проекта:
 

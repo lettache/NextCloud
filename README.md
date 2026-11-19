@@ -12,6 +12,7 @@ Pet-проект #1
 - WSL2
 - Docker
 - Ansible
+- Terraform
 
 Шаги проекта:
 

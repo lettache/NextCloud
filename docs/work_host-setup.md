@@ -51,15 +51,21 @@ memory=6442450944
 # Установка тулчейнов
 
 `sudo apt install -y git curl unzip python3-venv pipx`
+
 `sudo snap install --classic opentofu`
+
 `sudo pipx install --include-deps ansible`
+
 `sudo curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o awscliv2.zip && sudo unzip awscliv2.zip && sudo ./aws/install`
 
 # Клонирование репозитория с github
 
 `git config --global user.name "lettache"`
+
 `git config --global user.mail "<ID+lettache@users.noreply.github.com>"`
+
 `ssh-keygen -t ed25519 -C "lettachev@work-laptop"`
+
 `git clone git@github.com:lettache/NextCloud.git ~/NextCloud`
 
 # Проверка доступности используемых конечных точек на wsl: Ubuntu-24.04

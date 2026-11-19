@@ -1,7 +1,7 @@
 # Получаем информацию о хосте, создаем точку восстановление
-winver
+# Host setup — рабочий ноутбук (Win11 Pro, 32 GB)
 
-powercfg /a
+winver: 26H2 сбоока:26300.9974 | powercfg /a: … | VBS: … | диск под ВМ: 30 ГБ, свободно 240 ГБ
 
 Get-Volume | Select DriveLetter, FileSystemLabel, Size, SizeRemaining
 

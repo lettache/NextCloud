@@ -1,0 +1,5 @@
+all:
+  hosts:
+    nexcloud:
+      ansible_host: 192.168.118.49
+      ansible_user: vlk

@@ -1,49 +1,48 @@
 services:
   db:                                # база данных
-    image: postgres:16-alpine        # образ: PostgreSQL 16, alpine = лёгкая сборка
-    restart: always                  # сам поднимется после сбоя/ребута ВМ
+    image: postgres:16-alpine        # образ: PostgreSQL 16, alpine
+    restart: always                  # restart после сбоя/ребута ВМ
     volumes:
-      - db:/var/lib/postgresql       # том "db" = диск базы. Переживёт снос контейнера
+      - db:/var/lib/postgresql       # том "db" = диск базы
     env_file:
-      - .env                         # POSTGRES_* возьмёт отсюда
+      - .env                         # Переменные, настройки пароли
 
-  redis:                             # кэш блокировок, настройки не нужны
+  redis:                             # кэш блокировок
     image: redis:7-alpine
     restart: always
 
-  app:                               # сам Nextcloud: PHP-код + движок PHP-FPM
+  app:                               # Nextcloud: PHP-код + движок PHP-FPM
     image: nextcloud:35-fpm-alpine
     restart: always
     volumes:
       - nextcloud:/var/www/html      # том с кодом, конфигом и локальными файлами
     environment:
-      - POSTGRES_HOST=db             # адрес базы = имя сервиса (внутренний DNS)
+      - POSTGRES_HOST=db             
       - REDIS_HOST=redis
     env_file:
       - .env
     depends_on:
-      - db                           # стартовать после db и redis
+      - db                           # запуск после db и redis
       - redis
 
-  web:                               # nginx: входная дверь
+  web:                               # nginx
     image: nginx:alpine-slim
     restart: always
     ports:
-      - "8080:80"                    # порт 8080 на ВМ → порт 80 в контейнере.
-                                     # ВАЖНО: без "127.0.0.1:" в начале, иначе
-                                     # страница откроется только внутри ВМ
+      - "8080:80"                    # порт 8080 на ВМ → порт 80 в контейнере
+
     volumes:
-      - ./web/nginx.conf:/etc/nginx/nginx.conf:ro   # наш конфиг, ro = только чтение
-      - nextcloud:/var/www/html:ro   # тот же том, что у app: статику nginx отдаёт сам
+      - ./web/nginx.conf:/etc/nginx/nginx.conf:ro   # конфиг
+      - nextcloud:/var/www/html:ro   
     depends_on:
       - app
 
   cron:                              # фоновые задачи Nextcloud
-    image: nextcloud:35-fpm-alpine   # тот же образ, что у app...
+    image: nextcloud:35-fpm-alpine   
     restart: always
     volumes:
-      - nextcloud:/var/www/html      # ...и тот же том — обязательно
-    entrypoint: /cron.sh             # ...но запускает планировщик вместо PHP-FPM
+      - nextcloud:/var/www/html      
+    entrypoint: /cron.sh             
     depends_on:
       - db
       - redis

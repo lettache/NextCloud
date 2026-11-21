@@ -1,0 +1,53 @@
+services:
+  db:                                # база данных
+    image: postgres:16-alpine        # образ: PostgreSQL 16, alpine = лёгкая сборка
+    restart: always                  # сам поднимется после сбоя/ребута ВМ
+    volumes:
+      - db:/var/lib/postgresql       # том "db" = диск базы. Переживёт снос контейнера
+    env_file:
+      - .env                         # POSTGRES_* возьмёт отсюда
+
+  redis:                             # кэш блокировок, настройки не нужны
+    image: redis:7-alpine
+    restart: always
+
+  app:                               # сам Nextcloud: PHP-код + движок PHP-FPM
+    image: nextcloud:35-fpm-alpine
+    restart: always
+    volumes:
+      - nextcloud:/var/www/html      # том с кодом, конфигом и локальными файлами
+    environment:
+      - POSTGRES_HOST=db             # адрес базы = имя сервиса (внутренний DNS)
+      - REDIS_HOST=redis
+    env_file:
+      - .env
+    depends_on:
+      - db                           # стартовать после db и redis
+      - redis
+
+  web:                               # nginx: входная дверь
+    image: nginx:alpine-slim
+    restart: always
+    ports:
+      - "8080:80"                    # порт 8080 на ВМ → порт 80 в контейнере.
+                                     # ВАЖНО: без "127.0.0.1:" в начале, иначе
+                                     # страница откроется только внутри ВМ
+    volumes:
+      - ./web/nginx.conf:/etc/nginx/nginx.conf:ro   # наш конфиг, ro = только чтение
+      - nextcloud:/var/www/html:ro   # тот же том, что у app: статику nginx отдаёт сам
+    depends_on:
+      - app
+
+  cron:                              # фоновые задачи Nextcloud
+    image: nextcloud:35-fpm-alpine   # тот же образ, что у app...
+    restart: always
+    volumes:
+      - nextcloud:/var/www/html      # ...и тот же том — обязательно
+    entrypoint: /cron.sh             # ...но запускает планировщик вместо PHP-FPM
+    depends_on:
+      - db
+      - redis
+
+volumes:
+  db:                                # объявление именованных "дисков"
+  nextcloud:

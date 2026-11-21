@@ -37,7 +37,7 @@ curl.exe -I https://go.dev/dl/
 
 # Лимит ресурсов для ВМ wsl
 
-```
+```bash
 `%userprofile%\.wslconfig
 
 [wsl2]
@@ -74,7 +74,7 @@ memory=6442450944
 
 # Создание профиля aws и проверка подключения к S3 cloud.ru
 
-```
+```bash
 aws configure --profile s3_cloudru
 chmod 600 ~/.aws/credentials 
 EP=https://s3.cloud.ru

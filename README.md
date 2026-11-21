@@ -13,6 +13,7 @@ Pet-проект #1
 - Ansible v2.21.6
 - OpenTofu v1.13.9
 - AWS CLI v2.41.1
+- Docker v29.10.0
 
 Шаги проекта:
 

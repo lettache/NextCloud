@@ -1,6 +1,8 @@
-# ...
-  hosts:
-    nc-stage:
+all:
+  children:
+    webservers:
+      hosts:
+        nc-stage:
       ansible_host: 192.168.118.49
       ansible_user: vlk
       ansible_python_interpreter: /usr/bin/python3

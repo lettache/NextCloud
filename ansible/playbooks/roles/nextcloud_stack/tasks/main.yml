@@ -25,7 +25,7 @@
     cmd: docker compose up -d
     chdir: "{{ nc_dir }}"
   register: compose_out
-  changed_when: "creating" in compose_out.stderr or "Started" in compose_out.stderr
+  changed_when: "creating"
 
 - name: Ждём Nextcloud
   ansible.builtin.uri:
@@ -41,7 +41,7 @@
     cmd: docker compose exec -T -u www-data app php occ app:enable files_external
     chdir: "{{ nc_dir }}"
   register: ext_app
-  changed_when: "enabled" in ext_app.stdout
+  changed_when: "enabled"
 
 - name: Превью выключены
   ansible.builtin.command:

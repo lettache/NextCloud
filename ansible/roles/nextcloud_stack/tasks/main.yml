@@ -1,0 +1,70 @@
+- name: Каталог стека
+  ansible.builtin.file:
+    path: "{{ nc_dir }}"
+    state: directory
+
+- name: compose.yaml
+  ansible.builtin.copy:
+    src: compose.yaml
+    dest: "{{ nc_dir }}/compose/compose.yaml"
+
+- name: nginx.conf
+  ansible.builtin.copy:
+    src: nginx.conf
+    dest: "{{ nc_dir }}/compose/web/nginx.conf"
+
+- name: .env из шаблона
+  ansible.builtin.template:
+    src: env.j2
+    dest: "{{ nc_dir }}/.env"
+    mode: "0600"
+  no_log: true                    
+
+- name: docker compose up -d
+  ansible.builtin.command:
+    cmd: docker compose up -d
+    chdir: "{{ nc_dir }}"
+  register: compose_out
+  changed_when: "creating" in compose_out.stderr or "Started" in compose_out.stderr
+
+- name: Ждём Nextcloud
+  ansible.builtin.uri:
+    url: "http://localhost:{{ nc_port }}/status.php"
+    status_code: 200
+  register: nc_status
+  until: nc_status.json.installing == false
+  retries: 30
+  delay: 10
+
+- name: Включить files_external
+  ansible.builtin.command:
+    cmd: docker compose exec -T -u www-data app php occ app:enable files_external
+    chdir: "{{ nc_dir }}"
+  register: ext_app
+  changed_when: "enabled" in ext_app.stdout
+
+- name: Превью выключены
+  ansible.builtin.command:
+    cmd: docker compose exec -T -u www-data app php occ config:system:set enable_previews --type boolean --value false
+    chdir: "{{ nc_dir }}"
+  changed_when: true
+
+- name: S3 маунт (вместо ручных кликов в UI!)
+  ansible.builtin.command:
+    chdir: "{{ nc_dir }}"
+    cmd: >
+      docker compose exec -T -u www-data app php occ files_external:create
+      s3-media amazons3 amazons3::accesskey
+      -c bucket={{ s3_bucket }}
+      -c hostname={{ s3_endpoint }}
+      -c region={{ s3_region }}
+      -c storageClass=STANDARD
+      -c use_path_style=true
+      -c key={{ s3_access_key }}
+      -c secret={{ s3_secret_key }}
+  register: mount_out
+  changed_when: mount_out.rc == 0
+  failed_when:
+    - mount_out.rc != 0
+    - "'already exists' not in mount_out.stderr"
+  no_log: true

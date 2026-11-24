@@ -1,0 +1,6 @@
+- name: Развёртывание Nextcloud staging
+  hosts: nc-stage
+  become: true
+  roles:
+    - docker_host
+    - nextcloud_stack

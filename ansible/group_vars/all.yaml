@@ -1,0 +1,6 @@
+nc_dir: /srv/nextcloud
+nc_port: 8080
+nc_trusted_domains: "192.168.118.49 localhost"
+s3_bucket: bucket-nextcloud-media-stage
+s3_endpoint: s3.cloud.ru
+s3_region: ru-central-1

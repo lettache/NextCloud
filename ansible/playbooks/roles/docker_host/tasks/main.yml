@@ -1,14 +1,29 @@
-- name: Ключ репозитория Docker
-  ansible.builtin.apt_key:
+- name: Создать каталог для ключей
+  ansible.builtin.file:
+    path: /etc/apt/keyrings
+    state: directory
+    mode: '0755'
+
+- name: Скачать GPG-ключ Docker
+  ansible.builtin.get_url:
     url: https://download.docker.com/linux/ubuntu/gpg
+    dest: /etc/apt/keyrings/docker.asc
+    mode: '0644'
+    force: false
+
+- name: Добавить репозиторий Docker (deb822)
+  ansible.builtin.deb822_repository:
+    name: docker
+    types: deb
+    uris: https://download.docker.com/linux/ubuntu
+    suites: "{{ ansible_distribution_release }}"
+    components: stable
+    architectures: amd64
+    signed_by: /etc/apt/keyrings/docker.asc
+    enabled: yes
     state: present
 
-- name: Репозиторий Docker
-  ansible.builtin.apt_repository:
-    repo: "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable"
-    state: present
-
-- name: Пакеты Docker
+- name: Установить пакеты Docker
   ansible.builtin.apt:
     name:
       - docker-ce
@@ -18,21 +33,28 @@
       - docker-compose-plugin
     state: present
     update_cache: yes
+    cache_valid_time: 3600
 
-- name: daemon.json с зеркалами
+- name: Настроить daemon.json с зеркалами
   ansible.builtin.copy:
     dest: /etc/docker/daemon.json
     content: |
-      { "registry-mirrors": ["https://dockerhub.timeweb.cloud", "https://mirror.gcr.io"] }
-    notify: Перезапустить docker
+      {
+        "registry-mirrors": [
+          "https://dockerhub.timeweb.cloud",
+          "https://mirror.gcr.io"
+        ]
+      }
+    mode: '0644'
+  notify: Перезапустить docker
 
-- name: vlk в группе docker
+- name: Добавить vlk в группу docker
   ansible.builtin.user:
     name: vlk
     groups: docker
     append: yes
 
-- name: Docker запущен и включён в автостарт
+- name: Docker запущен и включён в автозагрузку
   ansible.builtin.service:
     name: docker
     state: started

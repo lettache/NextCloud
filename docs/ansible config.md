@@ -85,3 +85,4 @@ s3_secret_key:
     state: restarted
 ```
 
+`ansible-playbook -i ansible/inventory/hosts.yaml ansible/playbooks/site.yml`

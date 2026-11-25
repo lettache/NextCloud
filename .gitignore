@@ -3,4 +3,4 @@
 *.pem
 id_ed25519*
 vault-password
-vault-password.txt
+vault-pass.txt

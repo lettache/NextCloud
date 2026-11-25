@@ -81,3 +81,5 @@ EP=https://s3.cloud.ru
 aws --profile s3_cloudru --endpoint-url $EP s3 ls
 
 ```
+
+`ansible-playbook ansible/playbooks/site.yml`

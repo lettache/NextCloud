@@ -38,9 +38,10 @@
 - name: Ждём Nextcloud
   ansible.builtin.uri:
     url: "http://localhost:{{ nc_port }}/status.php"
+    return_content: yes
     status_code: 200
   register: nc_status
-  until: nc_status.json.installed == true
+  until: nc_status.content is search('"installed":true')
   retries: 30
   delay: 10
 

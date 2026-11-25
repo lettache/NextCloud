@@ -109,4 +109,12 @@ volumes:
 
 `docker compose exec -u www-data app php occ app:enable files_external`
 
+> Для запуска плэйбука необходима интерактивная аунтификация
+Варинаты решения:  
+- 
+```bash
+sudo visudo -f /etc/sudoers.d/vlk
+vlk ALL=(ALL) NOPASSWD: ALL
+```
 
+- `ansible-playbook -i ansible/inventory/hosts.yaml ansible/playbooks/site.yml --ask-become-pass`

@@ -86,3 +86,6 @@ s3_secret_key:
 ```
 
 `ansible-playbook -i ansible/inventory/hosts.yaml ansible/playbooks/site.yml`
+
+
+`chmod -x ansible/vault-pass.txt`

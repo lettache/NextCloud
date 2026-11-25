@@ -1,6 +1,8 @@
 - name: Развёртывание Nextcloud staging
   hosts: nc-stage
   become: true
+  vars_files:
+    - ../vault/secrets.yml
   roles:
     - docker_host
     - nextcloud_stack

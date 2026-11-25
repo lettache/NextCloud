@@ -8,31 +8,39 @@
     src: compose.yml
     dest: "{{ nc_dir }}/compose.yml"
 
+- name: Каталог web для nginx.conf
+  ansible.builtin.file:
+    path: "{{ nc_dir }}/web"
+    state: directory
+    mode: '0755'
+
 - name: nginx.conf
   ansible.builtin.copy:
     src: nginx.conf
-    dest: "{{ nc_dir }}/nginx.conf"
+    dest: "{{ nc_dir }}/web/nginx.conf"
+    mode: '0644'
 
 - name: .env из шаблона
   ansible.builtin.template:
     src: env.j2
     dest: "{{ nc_dir }}/.env"
     mode: "0600"
-  no_log: true                    
+  no_log: true
 
 - name: docker compose up -d
   ansible.builtin.command:
     cmd: docker compose up -d
     chdir: "{{ nc_dir }}"
   register: compose_out
-  changed_when: "creating"
+  changed_when: "'Created' in compose_out.stdout or 'Started' in compose_out.stdout"
+  failed_when: compose_out.rc != 0
 
 - name: Ждём Nextcloud
   ansible.builtin.uri:
     url: "http://localhost:{{ nc_port }}/status.php"
     status_code: 200
   register: nc_status
-  until: nc_status.json.installing == false
+  until: nc_status.json.installed == true
   retries: 30
   delay: 10
 
@@ -41,7 +49,7 @@
     cmd: docker compose exec -T -u www-data app php occ app:enable files_external
     chdir: "{{ nc_dir }}"
   register: ext_app
-  changed_when: "enabled"
+  changed_when: "'already enabled' not in ext_app.stdout"
 
 - name: Превью выключены
   ansible.builtin.command:

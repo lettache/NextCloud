@@ -3,15 +3,15 @@
     path: "{{ nc_dir }}"
     state: directory
 
-- name: compose.yaml
+- name: compose.yml
   ansible.builtin.copy:
-    src: compose.yaml
-    dest: "{{ nc_dir }}/compose/compose.yaml"
+    src: compose.yml
+    dest: "{{ nc_dir }}/compose.yml"
 
 - name: nginx.conf
   ansible.builtin.copy:
     src: nginx.conf
-    dest: "{{ nc_dir }}/compose/web/nginx.conf"
+    dest: "{{ nc_dir }}/nginx.conf"
 
 - name: .env из шаблона
   ansible.builtin.template:
